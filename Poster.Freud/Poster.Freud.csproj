@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9C2713B9-5201-4808-8AFD-3DAEC7330F6E}</ProjectGuid>
+    <ProjectGuid>{0D073B7F-6AFD-4757-8A7D-ED981151CAB0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Poster</RootNamespace>
-    <AssemblyName>Poster</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>Poster.Freud</RootNamespace>
+    <AssemblyName>Poster.Freud</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,22 +32,21 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CycleList.cs" />
-    <Compile Include="IMessageBinder.cs" />
-    <Compile Include="IMessageReceiver.cs" />
-    <Compile Include="IMessageRecieverHistory.cs" />
-    <Compile Include="IMessageSender.cs" />
-    <Compile Include="IMessageSenderFactory.cs" />
-    <Compile Include="ISerializationProvider.cs" />
-    <Compile Include="MessageAttribute.cs" />
-    <Compile Include="MessageBinder.cs" />
-    <Compile Include="MessageReceiver.cs" />
+    <Compile Include="FreudSerializationProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Freud\Freud\Freud.csproj">
+      <Project>{a533766a-dad6-4b88-b463-56195814f771}</Project>
+      <Name>Freud</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Poster\Poster.csproj">
+      <Project>{9c2713b9-5201-4808-8afd-3daec7330f6e}</Project>
+      <Name>Poster</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
