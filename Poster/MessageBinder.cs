@@ -7,13 +7,12 @@ namespace Poster
 {
     public class MessageBinder : IMessageBinder, IMessageBindAccess
     {
-        private Dictionary<string, List<MessageBindDelegate<object>>> _binds;
-
+        private Dictionary<string, List<MessageBindInstance>> _binds;
 
 
         public MessageBinder()
         {
-            _binds = new Dictionary<string, List<MessageBindDelegate<object>>>();
+            _binds = new Dictionary<string, List<MessageBindInstance>>();
         }
 
 
@@ -21,9 +20,9 @@ namespace Poster
         public void Bind<TMessage>(string name, MessageBindDelegate<TMessage> onRecv)
         {
             if (!_binds.ContainsKey(name))            
-                _binds[name] = new List<MessageBindDelegate<object>>();
+                _binds[name] = new List<MessageBindInstance>();
 
-            _binds[name].Add(message => onRecv((TMessage)message));
+            _binds[name].Add(new MessageBindInstance(message => onRecv((TMessage)message), typeof(TMessage)));
         }
 
 
@@ -40,7 +39,7 @@ namespace Poster
         }
 
 
-        public IList<MessageBindDelegate<object>> GetBinds(string messageName)
+        public IList<MessageBindInstance> GetBinds(string messageName)
         {
             return _binds[messageName];
         }

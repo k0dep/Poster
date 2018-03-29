@@ -2,6 +2,6 @@
 {
     public interface IMessageReceiver
     {
-        void Receive(string name, object message, object custom);
+        void Receive(string name, byte[] message, object custom);
     }
 }

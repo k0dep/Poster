@@ -20,18 +20,20 @@ namespace Poster
     {
         public IMessageBindAccess MessageBindAccess { get; private set; }
         public IList<MessageLogItem> MessageHistory { get; private set; }
+        public ISerializationProvider SerializationProvider { get; private set; }
 
-
-        public MessageReceiver(IMessageBindAccess bindAccess, int historyLen = 100)
+        public MessageReceiver(IMessageBindAccess bindAccess, ISerializationProvider serializationProvider, int historyLen = 100)
         {
             MessageBindAccess = bindAccess;
+            SerializationProvider = serializationProvider;
             MessageHistory = new CycleList<MessageLogItem>(historyLen);
         }
 
 
-        public void Receive(string name, object message, object custom)
+        public void Receive(string name, byte[] message, object custom)
         {
-            MessageHistory.Add(new MessageLogItem(DateTime.UtcNow, name, message, custom));
+            var logItem = new MessageLogItem(DateTime.UtcNow, name, message, custom);
+            MessageHistory.Add(logItem);
 
             if (!MessageBindAccess.AnyBind(name))
                 throw new MessageNotBindedException("Received not binded message: " + name, name, message);
@@ -39,7 +41,11 @@ namespace Poster
             var binds = MessageBindAccess.GetBinds(name);
 
             for (int i = 0; i < binds.Count; i++)
-                binds[i].Invoke(message);
+            {
+                var messageDeserialized = SerializationProvider.Deserialize(binds[i].MessageType, message);
+                logItem.AddMessage(message);
+                binds[i].BindAction(messageDeserialized);
+            }
         }
     }
 }

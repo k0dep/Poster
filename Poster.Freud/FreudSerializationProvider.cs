@@ -1,4 +1,5 @@
-﻿using Freud;
+﻿using System;
+using Freud;
 
 namespace Poster.Freud
 {
@@ -24,6 +25,11 @@ namespace Poster.Freud
         public T Deserialize<T>(byte[] data)
         {
             return Freud.Deserialize<T>(data);
+        }
+
+        public object Deserialize(Type type, byte[] data)
+        {
+            return Freud.Deserialize(type, data);
         }
     }
 }

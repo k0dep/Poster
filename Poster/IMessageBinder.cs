@@ -1,12 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Poster
 {
     public delegate void MessageBindDelegate<TMessage>(TMessage message);
 
+    public struct MessageBindInstance
+    {
+        public MessageBindDelegate<object> BindAction;
+        public Type MessageType;
+
+        public MessageBindInstance(MessageBindDelegate<object> bindAction, Type messageType)
+        {
+            BindAction = bindAction;
+            MessageType = messageType;
+        }
+    }
+
     public interface IMessageBindAccess
     {
-        IList<MessageBindDelegate<object>> GetBinds(string messageName);
+        IList<MessageBindInstance> GetBinds(string messageName);
         bool AnyBind(string messageBinder);
     }
 

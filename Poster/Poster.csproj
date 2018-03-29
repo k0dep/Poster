@@ -43,8 +43,10 @@
     <Compile Include="IMessageReceiver.cs" />
     <Compile Include="IMessageRecieverHistory.cs" />
     <Compile Include="IMessageSender.cs" />
+    <Compile Include="IMessageSenderAccess.cs" />
     <Compile Include="IMessageSenderFactory.cs" />
     <Compile Include="ISerializationProvider.cs" />
+    <Compile Include="LoggedMessageSenderAccess.cs" />
     <Compile Include="MessageAttribute.cs" />
     <Compile Include="MessageBinder.cs" />
     <Compile Include="MessageReceiver.cs" />

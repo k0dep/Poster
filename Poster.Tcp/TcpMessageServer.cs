@@ -1,11 +1,9 @@
-﻿using System;
+﻿using Poster.Tcp;
+using Signals;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
-using Signals;
 
 namespace Poster
 {
@@ -66,25 +64,7 @@ namespace Poster
 
             ConnectClientSignal.Invoke(sender);
 
-
-            var buffer = new byte[2048];
-            var clientStream = client.GetStream();
-            while (client.Connected && _tcpListener != null)
-            {
-                clientStream.Read(buffer, 0, 4);
-                var length = BitConverter.ToInt32(buffer, 0);
-
-                clientStream.Read(buffer, 0, length);
-
-                using (var memStream = new MemoryStream(buffer))
-                using (var binaryStream = new BinaryReader(memStream))
-                {
-                    var name = Encoding.ASCII.GetString(binaryStream.ReadBytes(binaryStream.ReadInt32()));
-                    var data = binaryStream.ReadBytes(binaryStream.ReadInt32());
-
-                    MessageReceiver.Receive(name, data, (IMessageSender)sender);
-                }
-            }
+            var listener = new TcpMessageListener(MessageReceiver, client, sender);
         }
 
         private void acceptClientThread()
@@ -92,6 +72,7 @@ namespace Poster
             while (_tcpListener != null)
             {
                 var thread = new Thread(handleConnection);
+                thread.Name = "ClientAccepter";
                 thread.Start(_tcpListener.AcceptTcpClient());
             }
         }

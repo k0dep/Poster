@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Linq;
+using NUnit.Framework;
 using Poster;
 
 namespace PosterTest
@@ -23,7 +24,7 @@ namespace PosterTest
            
             Assert.AreEqual(1, binder.GetBinds("message").Count);
 
-            binder.GetBinds("message")[0](null);
+            binder.GetBinds("message")[0].BindAction(null);
 
             Assert.True(isCall);
         }
@@ -45,7 +46,7 @@ namespace PosterTest
 
             Assert.AreEqual(1, binder.GetBinds(typeof(string).FullName).Count);
 
-            binder.GetBinds(typeof(string).FullName)[0](null);
+            binder.GetBinds(typeof(string).FullName)[0].BindAction(null);
 
             Assert.True(isCall);
         }
@@ -67,7 +68,7 @@ namespace PosterTest
 
             Assert.AreEqual(1, binder.GetBinds("foo").Count);
 
-            binder.GetBinds("foo")[0](null);
+            binder.GetBinds("foo")[0].BindAction(null);
 
             Assert.True(isCall);
         }
@@ -92,7 +93,7 @@ namespace PosterTest
 
             foreach (var messageBindDelegate in binder.GetBinds("message"))
             {
-                messageBindDelegate(null);
+                messageBindDelegate.BindAction(null);
             }
 
             Assert.AreEqual(3, res);
@@ -121,8 +122,8 @@ namespace PosterTest
             Assert.AreEqual(1, binder.GetBinds("message").Count);
             Assert.AreEqual(1, binder.GetBinds("message1").Count);
 
-            binder.GetBinds("message")[0](null);
-            binder.GetBinds("message1")[0](null);
+            binder.GetBinds("message").First().BindAction(null);
+            binder.GetBinds("message1").First().BindAction(null);
 
             Assert.AreEqual(3, res);
         }
