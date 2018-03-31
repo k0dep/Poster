@@ -41,6 +41,11 @@ namespace Poster
             _clientsList = new List<ClientInfo>();
         }
 
+        public TcpMessageServer(IMessageReceiver messageReceiver, ISerializationProvider serializationProvider) : this(
+            messageReceiver, new Signal<IMessageSender>(), serializationProvider, new Signal<TcpMessageListener>())
+        {
+        }
+
         public void Start(IPEndPoint endpoint)
         {
             if(_tcpListener != null)

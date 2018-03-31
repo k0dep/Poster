@@ -3,16 +3,11 @@ using System.Collections.Generic;
 
 namespace Signals
 {
-    public delegate void EmptySignalDelegate();
-    public delegate void SignalDelegate<TMessage>(TMessage message);
-
-
-
-    public class Signal : ISignal
+    public class Signal<TMessage> : ISignal<TMessage>
     {
         private readonly List<WeakReference> _listeners = new List<WeakReference>();
 
-        public void Listen(EmptySignalDelegate listener)
+        public void Listen(SignalDelegate<TMessage> listener)
         {
             if (listener == null)
                 throw new ArgumentNullException(nameof(listener));
@@ -20,7 +15,8 @@ namespace Signals
             _listeners.Add(new WeakReference(listener));
         }
 
-        public void Unlisten(EmptySignalDelegate listener)
+
+        public void Unlisten(SignalDelegate<TMessage> listener)
         {
             if (listener == null)
                 throw new ArgumentNullException(nameof(listener));
@@ -28,31 +24,30 @@ namespace Signals
             _listeners.RemoveAll(t => t.Target == listener);
         }
 
-        public void Invoke()
+        public void Invoke(TMessage message)
         {
             _listeners.RemoveAll(t =>
             {
                 if (!t.IsAlive)
                     return true;
 
-                return t.Target is EmptySignalDelegate target && target.Target == null;
+                return t.Target is SignalDelegate<TMessage> target && target.Target == null;
             });
 
             foreach (var weakReference in _listeners)
             {
-                var t = weakReference.Target as EmptySignalDelegate;
-                t.Invoke();
+                var t = weakReference.Target as SignalDelegate<TMessage>;
+                t.Invoke(message);
             }
         }
 
-
-        public static Signal operator +(Signal signal, EmptySignalDelegate listener)
+        public static Signal<TMessage> operator +(Signal<TMessage> signal, SignalDelegate<TMessage> listener)
         {
             signal.Listen(listener);
             return signal;
         }
 
-        public static Signal operator -(Signal signal, EmptySignalDelegate listener)
+        public static Signal<TMessage> operator -(Signal<TMessage> signal, SignalDelegate<TMessage> listener)
         {
             signal.Unlisten(listener);
             return signal;

@@ -101,5 +101,27 @@ namespace Poster.Tcp.Tests
 
             Assert.True(isReqv);
         }
+
+
+        [Test]
+        public void ShouldDisconnectNotify()
+        {
+            var server = new TcpMessageServer(new MessageReceiver(new MessageBinder(), Serialier), Serialier);
+
+            bool disconnected = false;
+            server.DisconnectClientSignal.Listen(l => disconnected = true);
+
+            server.Start(new IPEndPoint(IPAddress.Loopback, 13892));
+
+            var controllClient = new TcpClient();
+            controllClient.Connect("localhost", 13892);
+            controllClient.Close();
+
+            Thread.Sleep(100);
+
+            server.Stop();
+
+            Assert.True(disconnected);
+        }
     }
 }
