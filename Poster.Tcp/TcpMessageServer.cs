@@ -1,4 +1,5 @@
-﻿using Poster.Tcp;
+﻿using System;
+using Poster.Tcp;
 using Signals;
 using System.Collections.Generic;
 using System.Net;
@@ -12,16 +13,30 @@ namespace Poster
         public IMessageReceiver MessageReceiver { get; set; }
         public ISignal<IMessageSender> ConnectClientSignal { get; set; }
         public ISerializationProvider SerializationProvider { get; set; }
+        public ISignal<TcpMessageListener> DisconnectClientSignal { get; set; }
 
         private TcpListener _tcpListener;
         private List<ClientInfo> _clientsList;
         private Thread _acceptClientThread;
 
-        public TcpMessageServer(IMessageReceiver messageReceiver, ISignal<IMessageSender> connectClientSignal, ISerializationProvider serializationProvider)
+        public TcpMessageServer(IMessageReceiver messageReceiver, ISignal<IMessageSender> connectClientSignal,
+            ISerializationProvider serializationProvider, ISignal<TcpMessageListener> disconnectClientSignal)
         {
             MessageReceiver = messageReceiver;
             ConnectClientSignal = connectClientSignal;
             SerializationProvider = serializationProvider;
+            DisconnectClientSignal = disconnectClientSignal;
+
+            _clientsList = new List<ClientInfo>();
+        }
+
+        public TcpMessageServer(IMessageReceiver messageReceiver, ISignal<IMessageSender> connectClientSignal,
+            ISerializationProvider serializationProvider)
+        {
+            MessageReceiver = messageReceiver;
+            ConnectClientSignal = connectClientSignal;
+            SerializationProvider = serializationProvider;
+            DisconnectClientSignal = new Signal<TcpMessageListener>();
 
             _clientsList = new List<ClientInfo>();
         }
@@ -64,7 +79,7 @@ namespace Poster
 
             ConnectClientSignal.Invoke(sender);
 
-            var listener = new TcpMessageListener(MessageReceiver, client, sender);
+            var listener = new TcpMessageListener(MessageReceiver, client.GetStream(), DisconnectClientSignal, sender);
         }
 
         private void acceptClientThread()

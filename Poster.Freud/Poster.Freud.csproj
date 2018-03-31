@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Freud, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Freud.0.1.0-alpha\lib\net46\Freud.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
@@ -39,14 +42,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Freud\Freud\Freud.csproj">
-      <Project>{a533766a-dad6-4b88-b463-56195814f771}</Project>
-      <Name>Freud</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Poster\Poster.csproj">
       <Project>{9c2713b9-5201-4808-8afd-3daec7330f6e}</Project>
       <Name>Poster</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

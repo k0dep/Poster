@@ -43,7 +43,7 @@ namespace Poster
             for (int i = 0; i < binds.Count; i++)
             {
                 var messageDeserialized = SerializationProvider.Deserialize(binds[i].MessageType, message);
-                logItem.AddMessage(message);
+                logItem.AddMessage(messageDeserialized);
                 binds[i].BindAction(messageDeserialized);
             }
         }

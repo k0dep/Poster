@@ -16,7 +16,7 @@ namespace Poster
         public IMessageSender GetSender(object message)
         {
             var historyHit =
-                ReceiverHistory.MessageHistory.FirstOrDefault(t => t.DeserializedMessages.Contains(message));
+                ReceiverHistory.MessageHistory.FirstOrDefault(t => t != null && t.DeserializedMessages.Contains(message));
 
             var sender = historyHit?.CustomData as IMessageSender;
 

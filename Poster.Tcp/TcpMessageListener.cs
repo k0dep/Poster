@@ -3,6 +3,7 @@ using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using Signals;
 
 namespace Poster.Tcp
 {
@@ -10,9 +11,11 @@ namespace Poster.Tcp
     {
         public const int ReadTimeout = 500;
 
-        public IMessageReceiver Receiver { get; private set; }
+        public IMessageReceiver Receiver { get; }
 
         public NetworkStream NetworkStream { get; private set; }
+
+        public ISignal<TcpMessageListener> DisconnectSignal { get; }
 
         public object CustomData { get; set; }
 
@@ -22,6 +25,7 @@ namespace Poster.Tcp
             Receiver = receiver;
             NetworkStream = client.GetStream();
             CustomData = customData;
+            DisconnectSignal = new Signal<TcpMessageListener>();
             Start();
         }
 
@@ -29,6 +33,16 @@ namespace Poster.Tcp
         {
             Receiver = receiver;
             NetworkStream = networkStream;
+            CustomData = customData;
+            DisconnectSignal = new Signal<TcpMessageListener>();
+            Start();
+        }
+
+        public TcpMessageListener(IMessageReceiver receiver, NetworkStream networkStream, ISignal<TcpMessageListener> disconnectSignal, object customData)
+        {
+            Receiver = receiver;
+            NetworkStream = networkStream;
+            DisconnectSignal = disconnectSignal;
             CustomData = customData;
             Start();
         }
@@ -52,13 +66,24 @@ namespace Poster.Tcp
             var buffer = new byte[2048];
             while (NetworkStream != null)
             {
+                int bylesLength = 0;
                 try
                 {
-                    NetworkStream.Read(buffer, 0, 4);
+                    bylesLength = NetworkStream.Read(buffer, 0, 4);
                 }
                 catch (IOException e)
                 {
                     continue;
+                }
+                catch (ObjectDisposedException e)
+                {
+                    continue;
+                }
+
+                if (bylesLength == 0)
+                {
+                    DisconnectSignal.Invoke(this);
+                    break;
                 }
 
                 var length = BitConverter.ToInt32(buffer, 0);

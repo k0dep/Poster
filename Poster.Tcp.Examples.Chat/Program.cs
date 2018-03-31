@@ -9,6 +9,7 @@ namespace Poster.Tcp.Examples.Chat
     class Program
     {
         public static ISerializationProvider serializer = new FreudSerializationProvider();
+        private static bool leave;
 
         static void Main(string[] args)
         {
@@ -17,9 +18,14 @@ namespace Poster.Tcp.Examples.Chat
             else if(args.Length == 2)
             {
                 var serverIp = new IPEndPoint(IPAddress.Parse(args[0]), int.Parse(args[1]));
-                var chat = StartClientFactory(serverIp);
+                var (chat, client, listener) = StartClientFactory(serverIp);
+
+                listener.DisconnectSignal.Listen(t => leave = true);
 
                 ProcessChat(chat);
+
+                listener.Stop();
+                client.Close();
             }
         }
 
@@ -45,20 +51,28 @@ namespace Poster.Tcp.Examples.Chat
 
             chat.StartSession(nick);
 
-            while (true)
+            while (true && !leave)
             {
                 Console.Write($"{nick} > ");
                 var message = Console.ReadLine();
                 if (message == ":q")
                     break;
+
+                if(leave)
+                    return;
+
+                chat.SendMessage(message);
             }
+
+
         }
 
-        private static ChatClient StartClientFactory(IPEndPoint server)
+        private static (ChatClient, TcpClient, TcpMessageListener) StartClientFactory(IPEndPoint server)
         {
             var binder = new MessageBinder();
             var recv = new MessageReceiver(binder, serializer);
-            var client = new TcpClient(server);
+            var client = new TcpClient();
+            client.Connect(server);
             var tcpClient = new TcpMessageListener(recv, client);
             var sender = new TcpMessageSender(client, serializer);
             var connectSignal = new Signal<string>();
@@ -67,7 +81,12 @@ namespace Poster.Tcp.Examples.Chat
 
             var chatClient = new ChatClient(sender, binder, messageRecvSignal, connectSignal, leaveSignal);
 
-            return chatClient;
+            return (chatClient, client, tcpClient);
+        }
+
+        private static void disconnectClient(TcpMessageListener _)
+        {
+            
         }
 
         private static void StartServer(int parse)
@@ -87,59 +106,6 @@ namespace Poster.Tcp.Examples.Chat
         }
 
     }
-
-    class ChatClient
-    {
-        public IMessageSender ServerSender { get; set; }
-        public IMessageBinder ServerBinder { get; set; }
-
-        public ISignal<(string, string)> MessageRecvSignal { get; set; }
-        public ISignal<string> ClientConnectSignal { get; set; }
-        public ISignal<string> ClientLeaveSignal { get; set; }
-
-        public ChatClient(IMessageSender serverSender, IMessageBinder serverBinder, ISignal<(string, string)> messageRecvSignal, ISignal<string> clientConnectSignal, ISignal<string> clientLeaveSignal)
-        {
-            ServerSender = serverSender;
-            ServerBinder = serverBinder;
-            MessageRecvSignal = messageRecvSignal;
-            ClientConnectSignal = clientConnectSignal;
-            ClientLeaveSignal = clientLeaveSignal;
-
-            ServerBinder.Bind<MessageClientConnect>(clientConnected);
-            ServerBinder.Bind<MessageServerLeave>(clientLeave);
-            ServerBinder.Bind<MessageToClientMessage>(recvMessage);
-        }
-
-
-        public void StartSession(string nick)
-        {
-            ServerSender.Send(new MessageClientConnect(){Nick = nick});
-        }
-
-        public void SendMessage(string message)
-        {
-            ServerSender.Send(new MessageMessage(){Message = message});
-        }
-
-
-
-        private void recvMessage(MessageToClientMessage message)
-        {
-            MessageRecvSignal.Invoke((message.Nick, message.Message));
-        }
-
-        private void clientLeave(MessageServerLeave message)
-        {
-            ClientLeaveSignal.Invoke(message.Nick);
-        }
-
-        private void clientConnected(MessageClientConnect message)
-        {
-            ClientConnectSignal.Invoke(message.Nick);
-        }
-    }
-
-
 
 
     class MessageClientConnect

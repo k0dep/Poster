@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 
@@ -23,8 +24,9 @@ namespace Poster.Tcp.Examples.Chat
             Clients = new List<(IMessageSender, string)>();
 
             messageBinder.Bind<MessageClientConnect>(ClientConnect);
-            messageBinder.Bind<MessageClientLeave>(ClientLeave);
             messageBinder.Bind<MessageMessage>(RecvMessage);
+
+            Server.DisconnectClientSignal.Listen(t => ClientLeave((IMessageSender) t.CustomData));
         }
 
         public void Listen(int port)
@@ -39,15 +41,16 @@ namespace Poster.Tcp.Examples.Chat
 
 
 
-        private void ClientLeave(MessageClientLeave message)
+        private void ClientLeave(IMessageSender sender)
         {
-            var sender = MessageSenderAccess.GetSender(message);
             var (_, nick) = Clients.FirstOrDefault(t => t.Item1 == sender);
 
             Clients.RemoveAll(t => t.Item1 == sender);
 
             foreach (var (client, name) in Clients)
                 client.Send(new MessageServerLeave() {Nick = nick});
+
+            Console.WriteLine($"< {nick} disconnect");
         }
 
         private void ClientConnect(MessageClientConnect message)
@@ -56,6 +59,8 @@ namespace Poster.Tcp.Examples.Chat
                 client.Send(message);
 
             Clients.Add((MessageSenderAccess.GetSender(message), message.Nick));
+
+            Console.WriteLine($"> {message.Nick} connect");
         }
 
         private void RecvMessage(MessageMessage message)
@@ -64,11 +69,18 @@ namespace Poster.Tcp.Examples.Chat
             var (_, nick) = Clients.FirstOrDefault(t => t.Item1 == sender);
 
             foreach (var (bc_sender, _) in Clients)
+            {
+                if(bc_sender == sender)
+                    continue;
+                
                 bc_sender.Send(new MessageToClientMessage()
                 {
                     Nick = nick,
                     Message = message.Message
                 });
+            }
+
+            Console.WriteLine($"! {nick}: {message.Message}");
         }
     }
 }
