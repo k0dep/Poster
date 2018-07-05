@@ -36,6 +36,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Poster.Tcp.Examples.Chat", 
 		{0D073B7F-6AFD-4757-8A7D-ED981151CAB0} = {0D073B7F-6AFD-4757-8A7D-ED981151CAB0}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Poster.DefaultSerializationProvider", "Poster.DefaultSerializationProvider\Poster.DefaultSerializationProvider.csproj", "{24631729-4E05-442B-888A-86E603943FDC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +72,10 @@ Global
 		{B0031415-8A55-494F-8CE1-30AA18CD5B7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0031415-8A55-494F-8CE1-30AA18CD5B7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0031415-8A55-494F-8CE1-30AA18CD5B7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24631729-4E05-442B-888A-86E603943FDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24631729-4E05-442B-888A-86E603943FDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24631729-4E05-442B-888A-86E603943FDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24631729-4E05-442B-888A-86E603943FDC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

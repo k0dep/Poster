@@ -71,11 +71,11 @@ namespace Poster.Tcp
                 {
                     bylesLength = NetworkStream.Read(buffer, 0, 4);
                 }
-                catch (IOException e)
+                catch (IOException)
                 {
                     continue;
                 }
-                catch (ObjectDisposedException e)
+                catch (ObjectDisposedException)
                 {
                     continue;
                 }
