@@ -6,7 +6,7 @@ namespace Poster
     {
         private readonly IMessageReceiver _receiver;
 
-        public MessageSenderNoSerialize(ISerializationProvider serializator, IMessageReceiver reciever)
+        public MessageSenderNoSerialize(IMessageReceiver reciever)
         {
             _receiver = reciever;
         }
