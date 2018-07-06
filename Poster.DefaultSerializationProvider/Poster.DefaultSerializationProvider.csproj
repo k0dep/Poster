@@ -1,19 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9C2713B9-5201-4808-8AFD-3DAEC7330F6E}</ProjectGuid>
+    <ProjectGuid>{24631729-4E05-442B-888A-86E603943FDC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Poster</RootNamespace>
-    <AssemblyName>Poster</AssemblyName>
+    <RootNamespace>Poster.DefaultSerializationProvider</RootNamespace>
+    <AssemblyName>Poster.DefaultSerializationProvider</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -34,22 +35,21 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CycleList.cs" />
-    <Compile Include="IMessageBinder.cs" />
-    <Compile Include="IMessageReceiver.cs" />
-    <Compile Include="IMessageRecieverHistory.cs" />
-    <Compile Include="IMessageSender.cs" />
-    <Compile Include="IMessageSenderAccess.cs" />
-    <Compile Include="IMessageSenderFactory.cs" />
-    <Compile Include="ISerializationProvider.cs" />
-    <Compile Include="LoggedMessageSenderAccess.cs" />
-    <Compile Include="MessageAttribute.cs" />
-    <Compile Include="MessageBinder.cs" />
-    <Compile Include="MessageReceiver.cs" />
-    <Compile Include="MessageRevieverNoSerialize.cs" />
-    <Compile Include="MessageSender.cs" />
-    <Compile Include="MessageSenderNoSerialize.cs" />
+    <Compile Include="BinaryFormatterSerializationProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Poster\Poster.csproj">
+      <Project>{9c2713b9-5201-4808-8afd-3daec7330f6e}</Project>
+      <Name>Poster</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+         Other similar extension points exist, see Microsoft.Common.targets.
+    <Target Name="BeforeBuild">
+    </Target>
+    <Target Name="AfterBuild">
+    </Target>
+    -->
 </Project>
