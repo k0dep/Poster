@@ -9,6 +9,8 @@ namespace Poster.Tcp
 {
     public class TcpMessageListener
     {
+        private readonly TcpClient _client;
+        
         public const int ReadTimeout = 500;
 
         public IMessageReceiver Receiver { get; }
@@ -22,6 +24,7 @@ namespace Poster.Tcp
 
         public TcpMessageListener(IMessageReceiver receiver, TcpClient client, object customData = null)
         {
+            _client = client;
             Receiver = receiver;
             NetworkStream = client.GetStream();
             CustomData = customData;
@@ -47,6 +50,11 @@ namespace Poster.Tcp
             Start();
         }
 
+        ~TcpMessageListener()
+        {
+            _client?.Close();
+        }
+
         public void Stop()
         {
             NetworkStream = null;
@@ -63,9 +71,10 @@ namespace Poster.Tcp
 
         private void listen()
         {
-            var buffer = new byte[2048];
+            var buffer = new byte[1024 * 1024 * 5];
             while (NetworkStream != null)
             {
+                buffer[0] = buffer[1] = buffer[2] = buffer[3] = 0;
                 int bylesLength = 0;
                 try
                 {

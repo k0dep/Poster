@@ -6,7 +6,8 @@ using System.Text;
 namespace Poster
 {
     public class TcpMessageSender : IMessageSender
-    {        
+    {
+        private readonly TcpClient _client;
         private NetworkStream _stream;
         private ISerializationProvider _serializator;
 
@@ -20,6 +21,7 @@ namespace Poster
 
             if (!client.Connected)
                 throw new ArgumentException("tcp client should connected");
+            _client = client;
 
             _init(client.GetStream(), serializator);
         }
@@ -36,6 +38,11 @@ namespace Poster
                 throw new ArgumentException("NetworkStream is'nt writable");
 
             _init(stream, serializator);
+        }
+
+        ~TcpMessageSender()
+        {
+            _client?.Close();
         }
 
         private void _init(NetworkStream stream, ISerializationProvider serializator)
@@ -90,7 +97,7 @@ namespace Poster
         {
             if (message == null)
                 throw new ArgumentNullException("message");
-
+            
             var messageType = typeof(TMessage);
             var name = messageType.FullName;
 
